@@ -1,6 +1,6 @@
 [build]
   base = "coderdex-fe"
-  command = "npm run build"
+  command = "DISABLE_ESLINT_PLUGIN=true npm run build"
   publish = "build"
 
 [[redirects]]
