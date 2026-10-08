@@ -34,7 +34,13 @@ router.get("/", (req, res) => {
   const limit = parseInt(req.query.limit) || 20;
   const { search, type } = req.query; // why not query.search and query.type ???
 
-  let result = loadPokemon().data;
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+  const hostUrl = process.env.BACKEND_URL || `${protocol}://${req.get("host")}`;
+  
+  let result = loadPokemon().data.map(p => ({
+    ...p,
+    url: p.url.replace("http://localhost:5000", hostUrl)
+  }));
 
   if (search) {
     result = result.filter(
@@ -55,7 +61,12 @@ router.get("/", (req, res) => {
 
 router.get("/:id", (req, res) => {
   const getId = parseInt(req.params.id);
-  const result = loadPokemon().data;
+  const protocol = req.headers['x-forwarded-proto'] || req.protocol;
+  const hostUrl = process.env.BACKEND_URL || `${protocol}://${req.get("host")}`;
+  const result = loadPokemon().data.map(p => ({
+    ...p,
+    url: p.url.replace("http://localhost:5000", hostUrl)
+  }));
   const index = result.findIndex((e) => e.id === getId); // use map() doesnt tell where it in an rr, use findIndex to know the position, from that load previous and next
   const pokemon = result[index];
 
